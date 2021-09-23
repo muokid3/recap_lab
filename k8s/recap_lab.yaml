@@ -1,0 +1,62 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: recap_lab
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recap_lab 
+  namespace: recap_lab
+  labels:
+    app: recap_lab
+    type: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: recap_lab
+  template:
+    metadata:
+      labels:
+        app: recap_lab
+    spec:
+      containers:
+      - name: recap_lab
+        image: muokid4/recap_lab
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recap_lab
+  namespace: recap_lab
+spec:
+  type: ClusterIP
+  selector:
+    app: recap_lab
+  ports:
+    - port: 90
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: recap_lab
+  namespace: recap_lab
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /recap_lab(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: recap_lab
+            port:
+              number: 80
