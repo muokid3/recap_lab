@@ -1,5 +1,11 @@
 install: build release deploy test
 
+k3d:
+	k3d cluster create recap-lab --config k3d-config.yaml
+
+down:
+	k3d cluster delete recap-lab
+
 build:
 	docker build --tag muokid3/recap_lab .
 
